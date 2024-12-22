@@ -41,19 +41,21 @@ func CalcHandler(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	err := json.NewDecoder(r.Body).Decode(request)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal server error"})
 		return
 	}
 
 	result, err := calculation.Calc(request.Expression)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 
 	}
 
-	fmt.Fprintf(w, "result: %f", result)
+	json.NewEncoder(w).Encode(map[string]string{"result": fmt.Sprintf("%f", result)})
 }
 
 func (a *Application) RunServer() error {
