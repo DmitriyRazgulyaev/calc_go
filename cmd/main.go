@@ -1,8 +1,15 @@
 package main
 
-import "github.com/DmitriyRazgulyaev/calc_go/internal/application"
+import (
+	"log"
+
+	"github.com/DmitriyRazgulyaev/calc_go/internal/application"
+)
 
 func main() {
-	app := application.New()
-	app.RunServer()
+	app := application.NewOrchestrator()
+	log.Println("Starting Orchestrator on port", app.Config.Addr)
+	if err := app.RunServer(); err != nil {
+		log.Fatal(err)
+	}
 }
